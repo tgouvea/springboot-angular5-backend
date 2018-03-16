@@ -3,6 +3,7 @@ package com.tiagogouvea.api.entities;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,6 +35,7 @@ public class Chamado {
 	
 	private String imagem;
 	
+	@Transient
 	private List<HistoricoChamado> historico;
 
 	public String getId() {
