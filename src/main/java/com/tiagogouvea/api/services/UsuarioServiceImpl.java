@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.tiagogouvea.api.dtos.UsuarioDto;
 import com.tiagogouvea.api.entities.Usuario;
+import com.tiagogouvea.api.entities.enums.PerfilEnum;
 import com.tiagogouvea.api.repositories.UsuarioRepository;
 
 @Service
@@ -15,14 +18,19 @@ public class UsuarioServiceImpl implements UsuarioService{
 	@Autowired
 	UsuarioRepository usuarioRepository;
 	
+	@Autowired
+	PasswordEncoder senhaEncoder;
+	
 	@Override
 	public Usuario findByEmail(String email) {
 		return usuarioRepository.findByEmail(email);
 	}
 
 	@Override
-	public Usuario save(Usuario usuario) {
-		return usuarioRepository.save(usuario);
+	public Usuario save(UsuarioDto usuario) {
+		Usuario usurioCreated = usuarioRepository.save(usuarioDtoParaUsuario(usuario));
+		usurioCreated.setSenha(null);
+		return usurioCreated;
 	}
 
 	@Override
@@ -43,6 +51,19 @@ public class UsuarioServiceImpl implements UsuarioService{
 		Pageable pageable = new PageRequest(page, count);
 		
 		return usuarioRepository.findAll(pageable);
+	}
+	
+	
+	
+	private Usuario usuarioDtoParaUsuario(UsuarioDto usuarioDto) {
+		
+		Usuario usuario = new Usuario();
+		
+		usuario.setEmail(usuarioDto.getEmail());
+		usuario.setSenha(senhaEncoder.encode(usuarioDto.getSenha()));
+		usuario.setPerfil(PerfilEnum.ROLE_CLIENTE);
+		
+		return usuario;
 	}
 
 }
