@@ -1,4 +1,7 @@
 language: java
+addons:
+  sonarcloud:
+    organization: "tgouvea-github"
 jdk: 
   - oraclejdk8
 services:
