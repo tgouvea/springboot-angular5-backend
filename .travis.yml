@@ -4,6 +4,8 @@ addons:
     organization: "tgouvea-github"
 jdk: 
   - oraclejdk8
+script:
+  - mvn sonar:sonar
 services:
   - mongodb
 before_script:
