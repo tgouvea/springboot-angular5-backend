@@ -35,28 +35,33 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 		//Obtem o header de autorização
 		String token = request.getHeader("Authorization");
 		
-		//Recupera o nome de usuário do token
-		String nomeUsuario = jwtTokenUtil.obterNomeUsuarioDoToken(token);
-		
-		if (nomeUsuario != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+		//Se token vazio não verificar
+		if(token != null && !"".equals(token)) {
 			
-			//Recupera informações do usuário através do nome do usuário
-			UserDetails userDetails = this.UsuarioDetailsService.loadUserByUsername(nomeUsuario);	
-		
-			//Valida o token
-			if (jwtTokenUtil.validarToken(token, userDetails)) {
-				
-				//Se token valido define as informações de autorização do usuário no contexto de segurança do spring 				
-				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-				
-				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				
-				logger.info("Usuário autenticado " + nomeUsuario + ", definindo contexto de segurança");
-				
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-				
-			}
+			//Recupera o nome de usuário do token
+			String nomeUsuario = jwtTokenUtil.obterNomeUsuarioDoToken(token);
 			
+			if (nomeUsuario != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				
+				//Recupera informações do usuário através do nome do usuário
+				UserDetails userDetails = this.UsuarioDetailsService.loadUserByUsername(nomeUsuario);	
+			
+				//Valida o token
+				if (jwtTokenUtil.validarToken(token, userDetails)) {
+					
+					//Se token valido define as informações de autorização do usuário no contexto de segurança do spring 				
+					UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+					
+					authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					
+					logger.info("Usuário autenticado " + nomeUsuario + ", definindo contexto de segurança");
+					
+					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+					
+				}
+				
+		}
+		
 		}
 		
 		filterChain.doFilter(request, response);
