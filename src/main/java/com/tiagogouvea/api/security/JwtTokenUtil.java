@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ public class JwtTokenUtil implements Serializable {
 	static final String CLAIM_KEY_USERNAME = "sub";
 	static final String CLAIM_KEY_CREATED = "created";
 	static final String CLAIM_KEY_EXPIRED = "exp";
+	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Value("${jwt.secret}")
 	private String secret;
@@ -39,7 +43,7 @@ public class JwtTokenUtil implements Serializable {
 			final Claims claims = obterClaimsDoToken(token);
 			nomeUsuario = claims.getSubject();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		return nomeUsuario;
 	}
@@ -52,7 +56,7 @@ public class JwtTokenUtil implements Serializable {
 			final Claims claims = obterClaimsDoToken(token);
 			expiracao = claims.getExpiration();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		return expiracao;
 	}
@@ -64,7 +68,7 @@ public class JwtTokenUtil implements Serializable {
 		try {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		return claims;
@@ -102,7 +106,7 @@ public class JwtTokenUtil implements Serializable {
 			claims.put(CLAIM_KEY_CREATED, new Date());
 			refreshToken = obterToken(claims);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		return refreshToken;
